@@ -1,7 +1,9 @@
+/*Font*/
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Varela+Round&display=swap');
 
+/*valores por defecto*/
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Varela Round", sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;

@@ -75,10 +75,10 @@ function comenzarJuego() {
     inicializarJuego();
 }
 
+// Reiniciar juego
 reiniciarBtn.onclick = function() {
     pantallaVictoria.style.display = 'none';
     MenuDeJuego.style.display = 'none';
-    MenuDeJuego.style.display = 'block';
     inicializarJuego();
 };
 
@@ -102,7 +102,7 @@ function cambioEstado(carta) {
     renderizarTablero();
 }
 
-// Maneja el volteo de las cartas
+// Volteo de las cartas
 function voltearCarta(carta) {
     if (bloqueado || carta.descubierta || (primeraCarta && carta === primeraCarta)) return;
 
@@ -125,7 +125,7 @@ function voltearCarta(carta) {
             bloqueado = true;
             cambioEstado(carta);
         }
-        actualizarPuntajeActual(); // Actualizar puntaje después del intento
+        actualizarPuntajeActual();
     }
 }
 
@@ -149,6 +149,7 @@ function actualizarMejorPuntaje() {
     mejorPuntajeDisplay.textContent = `Mejor Puntaje: ${mejorPuntaje === Infinity ? 0 : mejorPuntaje}`;
 }
 
+// Pantalla Final del juego con puntuacion y tabla
 function final() {
     puntuaciones.push(puntaje);
     puntuaciones.sort((a, b) => b - a);
@@ -174,7 +175,7 @@ function final() {
 }
 
 
-// Reinicia el juego
+// Formas de reiniciar el juego
 reiniciarBtn.onclick = inicializarJuego;
 comenzarJuegoBtn.onclick = comenzarJuego;
 MenuDeInicioBtn.onclick = mostrarPantallaInicio;

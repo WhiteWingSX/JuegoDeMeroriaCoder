@@ -78,7 +78,7 @@ button:hover {
     align-items: center;
 }
 
-.inicio {
+.inicio, .ganador {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -93,5 +93,9 @@ button:hover {
 }
 
 #zonaDeJuego {
+    display: none;
+}
+
+#pantalla-victoria {
     display: none;
 }

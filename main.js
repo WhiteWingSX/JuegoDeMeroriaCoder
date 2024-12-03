@@ -15,6 +15,7 @@ let bloqueado = false;
 let intentos = 0;
 let aciertos = 0;
 let puntaje= 0;
+let puntuaciones = JSON.parse(localStorage.getItem('puntuaciones')) || [];
 
 // Mejor puntaje
 let mejorPuntaje = localStorage.getItem('mejorPuntaje');
@@ -25,15 +26,17 @@ mejorPuntaje = mejorPuntaje ? parseInt(mejorPuntaje) : Infinity;
 const pantallaInicio = document.getElementById('pantalla-inicio');
 const tablero = document.getElementById('tablero');
 const MenuDeJuego = document.getElementById('juego-principal');
+const pantallaVictoria = document.getElementById('pantalla-victoria');
 // Botones
 const reiniciarBtn = document.getElementById('reiniciar');
 const MenuDeInicioBtn = document.getElementById('menu-de-inicio');
 const comenzarJuegoBtn = document.getElementById('comenzar-juego');
+const regresarInicioBtn = document.getElementById('regresar-inicio');
 //puntaje
 const puntajeActualDisplay = document.getElementById('puntaje-actual');
 const mejorPuntajeDisplay = document.getElementById('mejor-puntaje');
-
-
+const puntajeFinalDisplay = document.getElementById('puntaje-final');
+const mejoresPuntajesList = document.getElementById('mejores-puntajes');
 
 // Parametros iniciales
 function inicializarJuego() {
@@ -59,6 +62,7 @@ function inicializarJuego() {
 // Menu de inicio
 function mostrarPantallaInicio() {
     MenuDeJuego.style.display = 'none';
+    pantallaVictoria.style.display = 'none';
     pantallaInicio.style.display = 'block';
     pantallaInicio.style.display = 'flex';
 }
@@ -66,9 +70,17 @@ function mostrarPantallaInicio() {
 // Comenzar el juego
 function comenzarJuego() {
     MenuDeJuego.style.display = 'block';
+    pantallaVictoria.style.display = 'none';
     pantallaInicio.style.display = 'none';
     inicializarJuego();
 }
+
+reiniciarBtn.onclick = function() {
+    pantallaVictoria.style.display = 'none';
+    MenuDeJuego.style.display = 'none';
+    MenuDeJuego.style.display = 'block';
+    inicializarJuego();
+};
 
 // Tablero
 function renderizarTablero() {
@@ -107,6 +119,7 @@ function voltearCarta(carta) {
             if (cartas.every((carta) => carta.descubierta)) {
                 actualizarPuntajeActual()
                 guardarMejorPuntaje();
+                final();
             }
         } else {
             bloqueado = true;
@@ -136,10 +149,36 @@ function actualizarMejorPuntaje() {
     mejorPuntajeDisplay.textContent = `Mejor Puntaje: ${mejorPuntaje === Infinity ? 0 : mejorPuntaje}`;
 }
 
+function final() {
+    puntuaciones.push(puntaje);
+    puntuaciones.sort((a, b) => b - a);
+    if (puntuaciones.length > 3) {
+        puntuaciones = puntuaciones.slice(0, 3);
+    }
+
+
+    localStorage.setItem('puntuaciones', JSON.stringify(puntuaciones));
+
+    pantallaVictoria.style.display = 'block';
+    pantallaVictoria.style.display = 'flex';
+
+    puntajeFinalDisplay.textContent = `Puntaje Final: ${puntaje}`;
+
+    mejoresPuntajesList.innerHTML = '';
+
+    puntuaciones.forEach((p, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `#${index + 1}: ${p}`;
+        mejoresPuntajesList.appendChild(listItem);
+    })
+}
+
+
 // Reinicia el juego
 reiniciarBtn.onclick = inicializarJuego;
 comenzarJuegoBtn.onclick = comenzarJuego;
 MenuDeInicioBtn.onclick = mostrarPantallaInicio;
+regresarInicioBtn.onclick = mostrarPantallaInicio;
 
 // Inicia el juego al cargar la página
 inicializarJuego();

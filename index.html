@@ -22,8 +22,10 @@
         <section>
             <!--Pantalla de inicio-->
             <div id="pantalla-inicio" class="inicio">
-                <h1>¡Bienvenido a "FLOW MEMORY" el juego de memoria!</h1>
-                <p>Encuentra todas las parejas de cartas para ganar el juego.</p>
+                <h1>¡Bienvenido a "POKE-FLOW MEMORY" el juego de memoria!</h1>
+                <p>Encuentra todas las parejas de cartas POKÉMON para ganar el juego.</p>
+                <label>Escribe tu nombre</label>
+                <input id="nombre-jugador" type="text" placeholder="Maximo 15 caracteres" maxlength="15">
                 <button id="comenzar-juego">Comenzar Partida</button>
             </div>
 
@@ -44,11 +46,13 @@
             <div id="pantalla-victoria" class="ganador">
                 <h2>¡Felicidades has completado el Juego!</h2>
                 <hr style="width: 80%">
-                <h3>TOP 3</h3>
+                <h3>TOP 5</h3>
                 <ul id="mejores-puntajes" type="none">
                 </ul>
                 <hr style="width: 80%">
-                <p id="puntaje-final">Puntaje Final: 0</p>
+                <p id="puntaje-final">
+                    <span id="nombre-ganador">Jugador</span>, tu puntaje final es: <span id="puntaje-total">0</span> puntos.
+                </p>
                 <button id="regresar-inicio" style="padding: 10px">Volver al Menú Principal</button>
             </div>
 

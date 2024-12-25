@@ -1,12 +1,52 @@
 // Constructor para las cartas
-function Carta(id, imagen) {
+function Carta(id, imagen, pokemonImagen) {
     this.id = id;
     this.imagen = imagen;
+    this.pokemonImagen = pokemonImagen;
     this.descubierta = false;
 }
 
 // Variables del juego
 const emojis = ['🐸', '🐱', '🐭', '🐯', '🦊', '🐰', '🐻‍❄️', '🐺'];
+
+// Mapeo de emojis a Pokemon en la PokeAPI
+const emojiToPokemon = {
+    '🐸': 'greninja',
+    '🐱': 'meowth',
+    '🐭': 'pikachu',
+    '🐯': 'incineroar',
+    '🦊': 'eevee',
+    '🐰': 'lopunny',
+    '🐻‍❄️': 'ursaring',
+    '🐺': 'lucario',
+};
+
+// Funcion para obtener las imágenes de la PokeAPI
+const fetchImagesForPokemons = async () => {
+    const imageUrls = [];
+
+    // Iterar sobre las claves de emojiToPokemon
+    for (let emoji in emojiToPokemon) {
+        const pokemonName = emojiToPokemon[emoji];
+        const url = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+
+        try {
+            // Ontencion del sprite del pokemon
+            const response = await fetch(url);
+            const data = await response.json();
+            const imageUrl = data.sprites.front_default;
+            imageUrls.push({ emoji, imageUrl });
+        } catch (error) {
+            // En caso de no obtener la imagen sera null
+            console.error('Error fetching Pokémon image:', error);
+            imageUrls.push({ emoji, imageUrl: null });
+        }
+    }
+
+    return imageUrls;
+};
+
+// Variables del juego
 let cartas = [];
 let primeraCarta = null;
 let bloqueado = false;
@@ -14,15 +54,18 @@ let bloqueado = false;
 // Control de puntuación
 let intentos = 0;
 let aciertos = 0;
-let puntaje= 0;
+let puntaje = 0;
 let puntuaciones = JSON.parse(localStorage.getItem('puntuaciones')) || [];
 
 // Mejor puntaje
 let mejorPuntaje = localStorage.getItem('mejorPuntaje');
 mejorPuntaje = mejorPuntaje ? parseInt(mejorPuntaje) : Infinity;
 
+// Jugador
+let nombreJugador = 'Player';
+
 // DOM
-// Menu
+// Menú
 const pantallaInicio = document.getElementById('pantalla-inicio');
 const tablero = document.getElementById('tablero');
 const MenuDeJuego = document.getElementById('juego-principal');
@@ -32,26 +75,28 @@ const reiniciarBtn = document.getElementById('reiniciar');
 const MenuDeInicioBtn = document.getElementById('menu-de-inicio');
 const comenzarJuegoBtn = document.getElementById('comenzar-juego');
 const regresarInicioBtn = document.getElementById('regresar-inicio');
-//puntaje
+// Puntaje
 const puntajeActualDisplay = document.getElementById('puntaje-actual');
 const mejorPuntajeDisplay = document.getElementById('mejor-puntaje');
-const puntajeFinalDisplay = document.getElementById('puntaje-final');
 const mejoresPuntajesList = document.getElementById('mejores-puntajes');
 
-// Parametros iniciales
-function inicializarJuego() {
+// Inicialización del juego
+async function inicializarJuego() {
     cartas = [];
     primeraCarta = null;
     bloqueado = false;
     intentos = 0;
     aciertos = 0;
 
+    const images = await fetchImagesForPokemons();  // Llamamos a la función para obtener las imágenes
+
     // Crear y barajar cartas
     const cartasDuplicadas = emojis.concat(emojis);
     cartasDuplicadas.sort(() => Math.random() - 0.5);
 
     cartasDuplicadas.forEach((emoji, index) => {
-        cartas.push(new Carta(index, emoji));
+        const pokemonImagen = images.find((image) => image.emoji === emoji)?.imageUrl || 'ruta_por_defecto';  // Imagen de Pokémon
+        cartas.push(new Carta(index, emoji, pokemonImagen));  // Crear carta con imagen de Pokémon
     });
 
     actualizarPuntajeActual();
@@ -59,7 +104,7 @@ function inicializarJuego() {
     renderizarTablero();
 }
 
-// Menu de inicio
+// Menú de inicio
 function mostrarPantallaInicio() {
     MenuDeJuego.style.display = 'none';
     pantallaVictoria.style.display = 'none';
@@ -69,6 +114,10 @@ function mostrarPantallaInicio() {
 
 // Comenzar el juego
 function comenzarJuego() {
+    const inputNombre = document.getElementById('nombre-jugador');
+    nombreJugador = inputNombre.value.trim() || 'jugador';
+    console.log(`Nombre del jugador: ${nombreJugador}`);
+
     MenuDeJuego.style.display = 'block';
     pantallaVictoria.style.display = 'none';
     pantallaInicio.style.display = 'none';
@@ -76,30 +125,34 @@ function comenzarJuego() {
 }
 
 // Reiniciar juego
-reiniciarBtn.onclick = function() {
+reiniciarBtn.onclick = function () {
     pantallaVictoria.style.display = 'none';
     MenuDeJuego.style.display = 'none';
     inicializarJuego();
 };
 
-// Tablero
+// Renderizar el tablero
 function renderizarTablero() {
-    tablero.innerHTML = '';
+    tablero.innerHTML = '';  // Limpiar tablero antes de renderizar
     cartas.forEach((carta) => {
         const cartaElement = document.createElement('div');
         cartaElement.className = 'carta';
-        cartaElement.textContent = carta.descubierta ? carta.imagen : '❓';
+        cartaElement.innerHTML = carta.descubierta ? `<img src="${carta.pokemonImagen}" alt="${carta.imagen}" />` : '❓';
         cartaElement.onclick = () => voltearCarta(carta);
         tablero.appendChild(cartaElement);
     });
 }
 
+// Cambio de estado para cartas incorrectas
 function cambioEstado(carta) {
-    carta.descubierta = false;
-    primeraCarta.descubierta = false;
-    primeraCarta = null;
-    bloqueado = false;
-    renderizarTablero();
+    bloqueado = true;
+    setTimeout(() => {
+        carta.descubierta = false;
+        primeraCarta.descubierta = false;
+        primeraCarta = null;
+        bloqueado = false;
+        renderizarTablero();
+    }, 1000);
 }
 
 // Volteo de las cartas
@@ -114,10 +167,10 @@ function voltearCarta(carta) {
     } else {
         intentos++;
         if (primeraCarta.imagen === carta.imagen) {
-            aciertos += 100;
+            aciertos += 110;
             primeraCarta = null;
             if (cartas.every((carta) => carta.descubierta)) {
-                actualizarPuntajeActual()
+                actualizarPuntajeActual();
                 guardarMejorPuntaje();
                 final();
             }
@@ -149,31 +202,31 @@ function actualizarMejorPuntaje() {
     mejorPuntajeDisplay.textContent = `Mejor Puntaje: ${mejorPuntaje === Infinity ? 0 : mejorPuntaje}`;
 }
 
-// Pantalla Final del juego con puntuacion y tabla
+// Pantalla Final del juego con puntuación y tabla
 function final() {
-    puntuaciones.push(puntaje);
-    puntuaciones.sort((a, b) => b - a);
-    if (puntuaciones.length > 3) {
-        puntuaciones = puntuaciones.slice(0, 3);
-    }
+    puntuaciones.push({ nombre: nombreJugador, puntaje: puntaje });
+    puntuaciones.sort((a, b) => b.puntaje - a.puntaje);
 
+    if (puntuaciones.length > 5) puntuaciones = puntuaciones.slice(0, 5);
 
     localStorage.setItem('puntuaciones', JSON.stringify(puntuaciones));
 
     pantallaVictoria.style.display = 'block';
     pantallaVictoria.style.display = 'flex';
 
-    puntajeFinalDisplay.textContent = `Puntaje Final: ${puntaje}`;
+    const nombreGanadorDisplay = document.getElementById('nombre-ganador');
+    const puntajeTotalDisplay = document.getElementById('puntaje-total');
+
+    nombreGanadorDisplay.textContent = nombreJugador;
+    puntajeTotalDisplay.textContent = puntaje;
 
     mejoresPuntajesList.innerHTML = '';
-
     puntuaciones.forEach((p, index) => {
         const listItem = document.createElement('li');
-        listItem.textContent = `#${index + 1}: ${p}`;
+        listItem.textContent = `#${index + 1}: ${p.nombre} ............... ${p.puntaje} puntos.`;
         mejoresPuntajesList.appendChild(listItem);
-    })
+    });
 }
-
 
 // Formas de reiniciar el juego
 reiniciarBtn.onclick = inicializarJuego;

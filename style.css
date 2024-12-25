@@ -101,3 +101,13 @@ button:hover {
 #pantalla-victoria {
     display: none;
 }
+
+#nombre-jugador {
+    width: 250px;
+    height: 20px;
+    background-color: #ffffff55;
+    border: none;
+    border-bottom: 2px solid #000000;
+    border-radius: 5px;
+}
+

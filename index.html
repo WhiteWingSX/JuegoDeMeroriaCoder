@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <title>Trabajo Practico - CoderHouse</title>
+</head>
+<body style="overflow: hidden">
+<!--Encabezado-->
+    <head >
+        <div class="headStyle">
+            <h1>Flow Memory</h1>
+            <span>Juego de memoria</span>
+        </div>
+    </head>
+
+<!--Contenido-->
+    <main class="backgroundDecoration">
+        <section>
+            <!--Pantalla de inicio-->
+            <div id="pantalla-inicio" class="inicio">
+                <h1>¡Bienvenido a "POKE-FLOW MEMORY" el juego de memoria!</h1>
+                <p>Encuentra todas las parejas de cartas POKÉMON para ganar el juego.</p>
+                <label>Escribe tu nombre</label>
+                <input id="nombre-jugador" type="text" placeholder="Maximo 15 caracteres" maxlength="15">
+                <button id="comenzar-juego">Comenzar Partida</button>
+            </div>
+
+            <!--Tablero de juego-->
+                <div id="juego-principal" class="zonaDeJuego">
+                    <p id="mejor-puntaje">Record: 0</p>
+                    <p id="puntaje-actual">Puntos: 0</p>
+                    <hr style="width: 80%">
+                    <div id="tablero"></div>
+                    <span id="mensajeIntentos"></span>
+                    <div class="ContenedorBtn">
+                        <button id="reiniciar" style="padding: 10px">Reiniciar Juego</button>
+                        <button id="menu-de-inicio" style="padding: 10px">Menu de inicio</button>
+                    </div>
+                </div>
+
+            <!--Pantalla de victoria-->
+            <div id="pantalla-victoria" class="ganador">
+                <h2>¡Felicidades has completado el Juego!</h2>
+                <hr style="width: 80%">
+                <h3>TOP 5</h3>
+                <ul id="mejores-puntajes" type="none">
+                </ul>
+                <hr style="width: 80%">
+                <p id="puntaje-final">
+                    <span id="nombre-ganador">Jugador</span>, tu puntaje final es: <span id="puntaje-total">0</span> puntos.
+                </p>
+                <button id="regresar-inicio" style="padding: 10px">Volver al Menú Principal</button>
+            </div>
+
+            <div>
+
+            </div>
+        </section>
+    </main>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="main.js" ></script>
+</html>
